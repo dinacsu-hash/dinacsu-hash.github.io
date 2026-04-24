@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晕香研究所 · Scent Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;700&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0d0c;
+  --bg2: #141210;
+  --bg3: #1a1714;
+  --surface: #1f1c18;
+  --surface2: #252117;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8e0d4;
+  --text2: #9a9085;
+  --text3: #5a5248;
+  --gold: #c9a96e;
+  --gold2: #a07c45;
+  --gold-pale: rgba(201,169,110,0.12);
+  --safe: #4a7c5f;
+  --safe-bg: rgba(74,124,95,0.15);
+  --risk: #8c4a4a;
+  --risk-bg: rgba(140,74,74,0.15);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+  cursor: default;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 3rem;
+  background: rgba(14,13,12,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.nav-logo span { color: var(--text2); font-style: italic; font-size: 0.9rem; margin-left: 8px; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+
+/* HERO */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 6rem 3rem 5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 40%, rgba(201,169,110,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(201,169,110,0.04) 0%, transparent 60%);
+}
+.hero-tag {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-tag::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 0.5px;
+  background: var(--gold);
+}
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 1.05;
+  color: var(--text);
+  max-width: 14ch;
+  margin-bottom: 2rem;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-sub {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  color: var(--text2);
+  max-width: 36ch;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border: 0.5px solid var(--gold2);
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.25s;
+  background: transparent;
+}
+.hero-cta:hover {
+  background: var(--gold-pale);
+  border-color: var(--gold);
+}
+.hero-scroll {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 3rem;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-scroll::after {
+  content: '';
+  display: block;
+  width: 0.5px;
+  height: 48px;
+  background: var(--text3);
+}
+
+/* SECTIONS common */
+section { padding: 7rem 3rem; }
+.sec-tag {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sec-tag::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 0.5px;
+  background: var(--gold);
+}
+.sec-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.sec-title em { font-style: italic; color: var(--gold); }
+
+/* ABOUT */
+#about { background: var(--bg2); }
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  margin-top: 3rem;
+  align-items: start;
+}
+.about-text p {
+  color: var(--text2);
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 300;
+  line-height: 2;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.about-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  border: 0.5px solid var(--border);
+  background: var(--border);
+  margin-top: 1rem;
+}
+.stat {
+  background: var(--surface);
+  padding: 2rem;
+}
+.stat-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.5rem;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.stat-label { font-size: 12px; color: var(--text2); letter-spacing: 0.05em; }
+.about-profile {
+  padding: 2.5rem;
+  border: 0.5px solid var(--border);
+  background: var(--surface);
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.profile-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 0.5px solid var(--gold2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--gold);
+  background: var(--gold-pale);
+  flex-shrink: 0;
+}
+.profile-name { font-size: 1rem; font-weight: 500; margin-bottom: 2px; }
+.profile-role { font-size: 12px; color: var(--text2); letter-spacing: 0.05em; }
+.profile-dna { display: flex; flex-direction: column; gap: 10px; }
+.dna-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.dna-label { color: var(--text3); width: 60px; flex-shrink: 0; font-size: 12px; letter-spacing: 0.05em; }
+.dna-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dna-chip {
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+.chip-safe { background: var(--safe-bg); color: #7ab895; border: 0.5px solid rgba(74,124,95,0.3); }
+.chip-risk { background: var(--risk-bg); color: #c47a7a; border: 0.5px solid rgba(140,74,74,0.3); }
+
+/* COLLECTION */
+#collection { background: var(--bg); }
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 0.5px solid var(--border);
+  margin-top: 3rem;
+}
+.col-card {
+  background: var(--bg);
+  padding: 2rem;
+  transition: background 0.2s;
+}
+.col-card:hover { background: var(--surface); }
+.col-rating {
+  font-family: 'DM Serif Display', serif;
+  color: var(--gold);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+}
+.col-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.col-brand { font-size: 11px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+.col-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1rem; }
+.col-tag {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border: 0.5px solid var(--border2);
+  color: var(--text2);
+}
+.col-note {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.8;
+  font-weight: 300;
+}
+.col-verdict {
+  margin-top: 1rem;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.v-safe { color: #7ab895; }
+.v-caution { color: #c9a96e; }
+.v-risk { color: #c47a7a; }
+
+/* TOOL */
+#tool { background: var(--bg2); }
+.tool-wrap {
+  margin-top: 3rem;
+  border: 0.5px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+.tool-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tool-header-title {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.tool-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); display: inline-block; margin-right: 8px; }
+.tool-tabs {
+  display: flex;
+  border-bottom: 0.5px solid var(--border);
+  overflow-x: auto;
+}
+.ttab {
+  padding: 1rem 1.5rem;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 1.5px solid transparent;
+  transition: all 0.2s;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+.ttab.on { color: var(--gold); border-bottom-color: var(--gold); }
+.ttab:hover:not(.on) { color: var(--text2); }
+.tool-body { padding: 2rem; }
+.tsec { display: none; }
+.tsec.on { display: block; }
+
+/* tool internals */
+.t-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.t-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 1.5rem; }
+.t-chip {
+  padding: 6px 14px;
+  border: 0.5px solid var(--border2);
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: all 0.15s;
+  background: transparent;
+}
+.t-chip:hover { border-color: var(--text2); color: var(--text); }
+.t-chip.on { background: var(--gold-pale); border-color: var(--gold2); color: var(--gold); }
+.t-chip.safe-c { border-color: rgba(74,124,95,0.3); color: #7ab895; background: var(--safe-bg); }
+.t-chip.safe-c.on { background: rgba(74,124,95,0.3); }
+.t-chip.risk-c { border-color: rgba(140,74,74,0.3); color: #c47a7a; background: var(--risk-bg); }
+.t-chip.risk-c.on { background: rgba(140,74,74,0.3); }
+.t-inp {
+  width: 100%;
+  padding: 10px 14px;
+  border: 0.5px solid var(--border2);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.t-inp:focus { border-color: var(--gold2); }
+.t-inp::placeholder { color: var(--text3); }
+textarea.t-inp { resize: vertical; min-height: 80px; }
+.t-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 0.5px solid var(--gold2);
+  color: var(--gold);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+}
+.t-btn:hover { background: var(--gold-pale); border-color: var(--gold); }
+.t-result {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 2;
+  white-space: pre-wrap;
+  display: none;
+}
+.t-result.show { display: block; }
+.t-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text3);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  display: none;
+}
+.t-loading.show { display: block; }
+.ldot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold2);
+  animation: ldot 1.2s infinite;
+  margin: 0 2px;
+}
+.ldot:nth-child(2){animation-delay:.2s}.ldot:nth-child(3){animation-delay:.4s}
+@keyframes ldot{0%,60%,100%{opacity:0.3}30%{opacity:1}}
+.pbar {
+  padding: 1rem 1.5rem;
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  margin-bottom: 1.5rem;
+  font-size: 12px;
+  color: var(--text3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.pbar-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.stars-row { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+.star { font-size: 1.3rem; cursor: pointer; color: var(--text3); transition: color 0.15s; }
+.star.on { color: var(--gold); }
+.diary-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.diary-item {
+  background: var(--bg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.diary-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.diary-name { font-size: 14px; font-weight: 500; }
+.diary-badge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+}
+.diary-badge.safe { background: var(--safe-bg); color: #7ab895; }
+.diary-badge.caution { background: var(--gold-pale); color: var(--gold); }
+.diary-badge.risk { background: var(--risk-bg); color: #c47a7a; }
+.diary-meta { font-size: 11px; color: var(--text3); }
+.diary-note { font-family: 'Noto Serif SC', serif; font-size: 13px; color: var(--text2); line-height: 1.8; font-weight: 300; }
+.empty-t { text-align: center; padding: 3rem; color: var(--text3); font-size: 13px; letter-spacing: 0.05em; }
+
+/* FOOTER */
+footer {
+  border-top: 0.5px solid var(--border);
+  padding: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text3);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+.footer-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1rem;
+  color: var(--gold);
+}
+
+/* animations */
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  section { padding: 5rem 1.5rem; }
+  #hero { padding: 5rem 1.5rem 4rem; }
+  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .collection-grid { grid-template-columns: 1fr; }
+  .tool-body { padding: 1.25rem; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#hero">晕香研究所 <span>Scent Lab</span></a>
+  <div class="nav-links">
+    <a href="#about">关于</a>
+    <a href="#collection">收藏</a>
+    <a href="#tool">香水顾问</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-tag">For the scent-sensitive</div>
+  <h1 class="hero-title">找到<em>不会晕</em>的那瓶香</h1>
+  <p class="hero-sub">一个关于嗅觉敏感与香水的个人研究站。在这里你可以建立自己的晕香档案，查询任何香水是否适合你。</p>
+  <a href="#tool" class="hero-cta">开始使用香水顾问</a>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="fade-in">
+    <div class="sec-tag">关于这个站</div>
+    <h2 class="sec-title">晕香，是真实存在<br>的<em>身体反应</em></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text fade-in">
+      <p>第一次因为香水晕车是在高中，车窗关着，旁边有人喷了浓烈的东方调。那种头疼从太阳穴开始蔓延，持续了整个下午。从那以后我开始认真研究：什么香调对我来说是安全的，什么成分是雷点。</p>
+      <p>这个站记录了我的探香旅程，以及一个专门为嗅觉敏感人群设计的查询工具——在买之前先检查，不再靠运气。</p>
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-num">23+</div>
+          <div class="stat-label">测试过的香水</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">6</div>
+          <div class="stat-label">确认雷区成分</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">当前收藏</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">AI</div>
+          <div class="stat-label">驱动的成分解析</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-profile fade-in">
+      <div class="profile-header">
+        <div class="profile-avatar">S</div>
+        <div>
+          <div class="profile-name">站长的晕香档案</div>
+          <div class="profile-role">非常敏感 · 持续更新中</div>
+        </div>
+      </div>
+      <div class="profile-dna">
+        <div class="dna-row">
+          <span class="dna-label">没问题</span>
+          <div class="dna-chips">
+            <span class="dna-chip chip-safe">淡花香</span>
+            <span class="dna-chip chip-safe">木质</span>
+            <span class="dna-chip chip-safe">柑橘</span>
+            <span class="dna-chip chip-safe">茶香</span>
+          </div>
+        </div>
+        <div class="dna-row">
+          <span class="dna-label">雷区</span>
+          <div class="dna-chips">
+            <span class="dna-chip chip-risk">麝香</span>
+            <span class="dna-chip chip-risk">浓郁花香</span>
+            <span class="dna-chip chip-risk">东方/琥珀</span>
+            <span class="dna-chip chip-risk">烟熏/皮革</span>
+            <span class="dna-chip chip-risk">龙涎香</span>
+            <span class="dna-chip chip-risk">香根草</span>
+          </div>
+        </div>
+        <div class="dna-row">
+          <span class="dna-label">踩雷过</span>
+          <div class="dna-chips">
+            <span class="dna-chip chip-risk">肌肤之花</span>
+            <span class="dna-chip chip-risk">TF苦桃</span>
+            <span class="dna-chip chip-risk">奇迹天光</span>
+          </div>
+        </div>
+        <div class="dna-row">
+          <span class="dna-label">安全</span>
+          <div class="dna-chips">
+            <span class="dna-chip chip-safe">慵懒周末</span>
+            <span class="dna-chip chip-safe">粉色邂逅</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLECTION -->
+<section id="collection">
+  <div class="fade-in">
+    <div class="sec-tag">心得收藏</div>
+    <h2 class="sec-title">测试过的<em>香水记录</em></h2>
+  </div>
+  <div class="collection-grid fade-in">
+    <div class="col-card">
+      <div class="col-rating">★★★★★</div>
+      <div class="col-name">慵懒周末</div>
+      <div class="col-brand">Maison Margiela · Replica</div>
+      <div class="col-tags">
+        <span class="col-tag">茶香</span>
+        <span class="col-tag">木质</span>
+        <span class="col-tag">柔和</span>
+      </div>
+      <div class="col-note">完全没有不适感。清晨茶香配上轻盈的木质，像刚洗完澡的干净感。持香温和，扩散力低，很适合密闭空间。</div>
+      <div class="col-verdict v-safe">· 完全安全</div>
+    </div>
+    <div class="col-card">
+      <div class="col-rating">★★★★☆</div>
+      <div class="col-name">粉色邂逅</div>
+      <div class="col-brand">Chanel · Chance</div>
+      <div class="col-tags">
+        <span class="col-tag">淡花香</span>
+        <span class="col-tag">果香</span>
+        <span class="col-tag">清新</span>
+      </div>
+      <div class="col-note">轻盈的粉调花香，没有触发任何不适。前段很讨喜，后段稍微有一点白麝香但非常温和。日常和约会都适合。</div>
+      <div class="col-verdict v-safe">· 完全安全</div>
+    </div>
+    <div class="col-card">
+      <div class="col-rating">★★☆☆☆</div>
+      <div class="col-name">肌肤之花</div>
+      <div class="col-brand">Diptyque · Do Son</div>
+      <div class="col-tags">
+        <span class="col-tag">浓郁花香</span>
+        <span class="col-tag">麝香</span>
+      </div>
+      <div class="col-note">喷后20分钟开始头疼。茉莉和麝香的组合对我来说太重了。后段麝香底调持续扩散，密闭空间完全不能用。</div>
+      <div class="col-verdict v-risk">· 踩雷，不推荐</div>
+    </div>
+    <div class="col-card">
+      <div class="col-rating">★★★☆☆</div>
+      <div class="col-name">Thé Matcha 26</div>
+      <div class="col-brand">Le Labo</div>
+      <div class="col-tags">
+        <span class="col-tag">茶香</span>
+        <span class="col-tag">木质</span>
+        <span class="col-tag">香根草</span>
+      </div>
+      <div class="col-note">前段抹茶清新很喜欢，但基底的香根草让我后段有轻微不适。通风户外可以用，密闭空间需谨慎。建议先试小样。</div>
+      <div class="col-verdict v-caution">· 谨慎尝试</div>
+    </div>
+    <div class="col-card">
+      <div class="col-rating">★★★★★</div>
+      <div class="col-name">White Shirts</div>
+      <div class="col-brand">LOE</div>
+      <div class="col-tags">
+        <span class="col-tag">亚麻</span>
+        <span class="col-tag">皂感</span>
+        <span class="col-tag">白麝香</span>
+      </div>
+      <div class="col-note">像刚从烘干机里拿出来的白衬衫。白麝香非常温和，整体扩散力低。性价比很高，适合日常通勤。</div>
+      <div class="col-verdict v-safe">· 完全安全</div>
+    </div>
+    <div class="col-card">
+      <div class="col-rating">★☆☆☆☆</div>
+      <div class="col-name">苦桃</div>
+      <div class="col-brand">Tom Ford · Lost Cherry</div>
+      <div class="col-tags">
+        <span class="col-tag">东方</span>
+        <span class="col-tag">甜香</span>
+        <span class="col-tag">琥珀</span>
+      </div>
+      <div class="col-note">甜腻的东方调，立刻头晕。琥珀底调非常浓重，完全是我的雷区组合。即使很小量也难受，这款彻底不适合我。</div>
+      <div class="col-verdict v-risk">· 踩雷，不推荐</div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOL -->
+<section id="tool">
+  <div class="fade-in">
+    <div class="sec-tag">AI 香水顾问</div>
+    <h2 class="sec-title">查询任何香水<br><em>适不适合你</em></h2>
+  </div>
+  <div class="tool-wrap fade-in">
+    <div class="tool-header">
+      <div class="tool-header-title"><span class="tool-dot"></span>个人香水助理</div>
+      <div style="font-size:11px;color:var(--text3);letter-spacing:0.08em">基于你的晕香档案分析</div>
+    </div>
+    <div class="tool-tabs">
+      <button class="ttab on" onclick="tgo('profile')">我的档案</button>
+      <button class="ttab" onclick="tgo('check')">查询香水</button>
+      <button class="ttab" onclick="tgo('diary')">香水日记</button>
+      <button class="ttab" onclick="tgo('discover')">为你发现</button>
+      <button class="ttab" onclick="tgo('rec')">场合推荐</button>
+    </div>
+    <div class="tool-body">
+
+      <!-- 档案 -->
+      <div class="tsec on" id="ts-profile">
+        <div class="t-label">没问题的香调</div>
+        <div class="t-chips" id="tg-safe">
+          <div class="t-chip safe-c" data-v="柑橘/清新">柑橘/清新</div>
+          <div class="t-chip safe-c" data-v="海洋/绿叶">海洋/绿叶</div>
+          <div class="t-chip safe-c" data-v="果香">果香</div>
+          <div class="t-chip safe-c" data-v="淡花香">淡花香</div>
+          <div class="t-chip safe-c" data-v="木质">木质</div>
+          <div class="t-chip safe-c" data-v="茶香">茶香</div>
+          <div class="t-chip safe-c" data-v="亚麻/皂感">亚麻/皂感</div>
+        </div>
+        <div class="t-label">容易晕的香调</div>
+        <div class="t-chips" id="tg-risk">
+          <div class="t-chip risk-c" data-v="麝香">麝香</div>
+          <div class="t-chip risk-c" data-v="浓郁花香">浓郁花香</div>
+          <div class="t-chip risk-c" data-v="东方/琥珀">东方/琥珀</div>
+          <div class="t-chip risk-c" data-v="美食甜香">美食甜香</div>
+          <div class="t-chip risk-c" data-v="烟熏/皮革">烟熏/皮革</div>
+          <div class="t-chip risk-c" data-v="龙涎香">龙涎香</div>
+          <div class="t-chip risk-c" data-v="香根草/岩兰草">香根草/岩兰草</div>
+        </div>
+        <div class="t-label">敏感度</div>
+        <div class="t-chips" id="tg-sens">
+          <div class="t-chip" data-v="非常敏感">非常敏感</div>
+          <div class="t-chip" data-v="有点敏感">有点敏感</div>
+          <div class="t-chip" data-v="普通">普通</div>
+          <div class="t-chip" data-v="不太敏感">不太敏感</div>
+        </div>
+        <div class="t-label">喷了没事的香水</div>
+        <input class="t-inp" id="tp-good" placeholder="例如：马吉拉慵懒周末...">
+        <div class="t-label">让你晕的香水</div>
+        <input class="t-inp" id="tp-bad" placeholder="例如：蒂普提克肌肤之花...">
+        <button class="t-btn" onclick="saveProfile()">保存档案</button>
+        <div class="t-result" id="tp-saved"></div>
+      </div>
+
+      <!-- 查询 -->
+      <div class="tsec" id="ts-check">
+        <div class="pbar" id="ck-pbar">档案未填写 — 先去「我的档案」建立你的晕香画像</div>
+        <div class="t-label">香水名称</div>
+        <input class="t-inp" id="ck-name" placeholder="例如：Dior真我、Jo Malone牡丹...">
+        <div class="t-label">补充信息（选填）</div>
+        <input class="t-inp" id="ck-extra" placeholder="例如：想日常通勤用...">
+        <button class="t-btn" onclick="checkPerfume()">分析适合度 →</button>
+        <div class="t-loading" id="ck-load">分析中 <span class="ldot"></span><span class="ldot"></span><span class="ldot"></span></div>
+        <div class="t-result" id="ck-res"></div>
+      </div>
+
+      <!-- 日记 -->
+      <div class="tsec" id="ts-diary">
+        <div class="t-label">香水名称</div>
+        <input class="t-inp" id="d-name" placeholder="例如：LOE White Shirts">
+        <div class="t-label">评分</div>
+        <div class="stars-row" id="d-stars">
+          <span class="star" data-s="1">★</span><span class="star" data-s="2">★</span><span class="star" data-s="3">★</span><span class="star" data-s="4">★</span><span class="star" data-s="5">★</span>
+        </div>
+        <div class="t-label">感受</div>
+        <textarea class="t-inp" id="d-note" placeholder="喷了之后的感受，晕不晕，适合什么场合..."></textarea>
+        <div class="t-label">结果</div>
+        <div class="t-chips" id="d-res">
+          <div class="t-chip safe-c" data-v="没问题">没问题</div>
+          <div class="t-chip risk-c" data-v="有点晕">有点晕</div>
+          <div class="t-chip risk-c" data-v="很晕">很晕</div>
+          <div class="t-chip" data-v="待观察">待观察</div>
+        </div>
+        <button class="t-btn" onclick="addDiary()">保存记录</button>
+        <div style="margin-top:1.5rem">
+          <div class="diary-list" id="diary-list"></div>
+        </div>
+      </div>
+
+      <!-- 发现 -->
+      <div class="tsec" id="ts-discover">
+        <div class="pbar" id="disc-pbar">档案未填写 — 先去「我的档案」建立你的晕香画像</div>
+        <div class="t-label">探索方向（选填）</div>
+        <input class="t-inp" id="disc-hint" placeholder="例如：想试Jo Malone、夏天用的、小众香...">
+        <button class="t-btn" onclick="discover()">帮我发现适合的香 →</button>
+        <div class="t-loading" id="disc-load">探香中 <span class="ldot"></span><span class="ldot"></span><span class="ldot"></span></div>
+        <div class="t-result" id="disc-res"></div>
+      </div>
+
+      <!-- 推荐 -->
+      <div class="tsec" id="ts-rec">
+        <div class="pbar" id="rec-pbar">档案未填写 — 先去「我的档案」建立你的晕香画像</div>
+        <div class="t-label">场合</div>
+        <div class="t-chips" id="r-occ">
+          <div class="t-chip" data-v="日常通勤">日常通勤</div>
+          <div class="t-chip" data-v="重要约会">重要约会</div>
+          <div class="t-chip" data-v="职场/面试">职场/面试</div>
+          <div class="t-chip" data-v="户外运动">户外运动</div>
+          <div class="t-chip" data-v="晚宴派对">晚宴派对</div>
+          <div class="t-chip" data-v="居家休闲">居家休闲</div>
+        </div>
+        <div class="t-label">季节</div>
+        <div class="t-chips" id="r-sea">
+          <div class="t-chip" data-v="春">春</div>
+          <div class="t-chip" data-v="夏">夏</div>
+          <div class="t-chip" data-v="秋">秋</div>
+          <div class="t-chip" data-v="冬">冬</div>
+        </div>
+        <div class="t-label">预算</div>
+        <div class="t-chips" id="r-bud">
+          <div class="t-chip" data-v="200元以内">200元以内</div>
+          <div class="t-chip" data-v="200-500元">200-500元</div>
+          <div class="t-chip" data-v="500-1500元">500-1500元</div>
+          <div class="t-chip" data-v="不限">不限</div>
+        </div>
+        <div class="t-label">其他补充（选填）</div>
+        <input class="t-inp" id="r-ext" placeholder="例如：想要持久一点、送给朋友...">
+        <button class="t-btn" onclick="getRec()">为我推荐 →</button>
+        <div class="t-loading" id="rec-load">顾问思考中 <span class="ldot"></span><span class="ldot"></span><span class="ldot"></span></div>
+        <div class="t-result" id="rec-res"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">晕香研究所</div>
+  <div>为嗅觉敏感的人而建 · 用体验数据说话</div>
+  <div>2026</div>
+</footer>
+
+<script>
+let profile = {safe:[],risk:[],sens:'',goodPerf:'',badPerf:''};
+let diary = [];
+let dScore = 0;
+
+// chip toggles
+document.querySelectorAll('#tg-safe .t-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+document.querySelectorAll('#tg-risk .t-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+['tg-sens','r-occ','r-sea','r-bud','d-res'].forEach(id=>{
+  document.querySelectorAll('#'+id+' .t-chip').forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll('#'+id+' .t-chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+  }));
+});
+document.querySelectorAll('#d-stars .star').forEach(s=>s.addEventListener('click',()=>{
+  dScore=+s.dataset.s;
+  document.querySelectorAll('#d-stars .star').forEach((x,i)=>x.classList.toggle('on',i<dScore));
+}));
+
+function tgo(id) {
+  document.querySelectorAll('.ttab').forEach((t,i)=>t.classList.toggle('on',['profile','check','diary','discover','rec'][i]===id));
+  document.querySelectorAll('.tsec').forEach(s=>s.classList.toggle('on',s.id==='ts-'+id));
+  if(id!=='profile') renderPbar(id+'-pbar');
+}
+
+function saveProfile() {
+  profile.safe=[...document.querySelectorAll('#tg-safe .t-chip.on')].map(c=>c.dataset.v);
+  profile.risk=[...document.querySelectorAll('#tg-risk .t-chip.on')].map(c=>c.dataset.v);
+  profile.sens=document.querySelector('#tg-sens .t-chip.on')?.dataset.v||'';
+  profile.goodPerf=document.getElementById('tp-good').value.trim();
+  profile.badPerf=document.getElementById('tp-bad').value.trim();
+  const el=document.getElementById('tp-saved');
+  el.classList.add('show');
+  el.textContent=`档案已保存。\n没问题：${profile.safe.join('、')||'未选'}\n容易晕：${profile.risk.join('、')||'未选'}\n敏感度：${profile.sens||'未选'}`;
+}
+
+function renderPbar(pid) {
+  const el=document.getElementById(pid);
+  if(!el) return;
+  if(!profile.safe.length&&!profile.risk.length) {
+    el.innerHTML='档案未填写 — 先去「我的档案」建立你的晕香画像';
+  } else {
+    const s=profile.safe.map(v=>`<span class="dna-chip chip-safe">${v}</span>`).join('');
+    const r=profile.risk.map(v=>`<span class="dna-chip chip-risk">${v}</span>`).join('');
+    el.innerHTML=`<div class="pbar-chips">${s}${r}</div>`;
+  }
+}
+
+function buildProfile() {
+  if(!profile.safe.length&&!profile.risk.length) return '用户未建立档案。';
+  const dText=diary.length?'\n用户日记：\n'+diary.map(d=>`- ${d.name}（${d.result}，${d.score}星）：${d.note}`).join('\n'):'';
+  return `用户晕香档案：
+- 敏感度：${profile.sens||'未知'}
+- 没问题的香调：${profile.safe.join('、')||'无'}
+- 容易晕的香调：${profile.risk.join('、')||'无'}
+- 喷了没事的香水：${profile.goodPerf||'无'}
+- 让她晕的香水：${profile.badPerf||'无'}${dText}`;
+}
+
+async function callAI(prompt) {
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();
+  return d.content?.map(b=>b.text||'').join('')||'暂时无法获取回复';
+}
+
+function show(loadId,resId) {
+  document.getElementById(loadId).classList.add('show');
+  const r=document.getElementById(resId);
+  r.classList.remove('show'); r.textContent='';
+}
+function done(loadId,resId,text) {
+  document.getElementById(loadId).classList.remove('show');
+  const r=document.getElementById(resId);
+  r.classList.add('show'); r.textContent=text;
+}
+
+async function checkPerfume() {
+  const name=document.getElementById('ck-name').value.trim();
+  if(!name){alert('请输入香水名称');return;}
+  const extra=document.getElementById('ck-extra').value.trim();
+  show('ck-load','ck-res');
+  const prompt=`你是专业香水顾问。\n\n${buildProfile()}\n\n用户查询：${name}\n${extra?'补充：'+extra:''}\n\n请分两部分回复（不用markdown符号）：\n\n【香水成分解析】\n逐一列出主要香调/成分，每个后面标注：\n✓ 安全（符合用户没问题的香调）\n✗ 雷点（符合用户容易晕的香调）\n? 未知\n\n【综合判断】\n适合 / 谨慎尝试 / 不适合（选一个），理由1-2句，实用建议1条。`;
+  try{const r=await callAI(prompt);done('ck-load','ck-res',r);}
+  catch(e){done('ck-load','ck-res','分析出错，请稍后重试。');}
+}
+
+function addDiary() {
+  const name=document.getElementById('d-name').value.trim();
+  if(!name){alert('请填写香水名称');return;}
+  const entry={name,score:dScore,note:document.getElementById('d-note').value.trim(),result:document.querySelector('#d-res .t-chip.on')?.dataset.v||'待观察',date:new Date().toLocaleDateString('zh-CN')};
+  diary.unshift(entry);
+  renderDiary();
+  document.getElementById('d-name').value='';
+  document.getElementById('d-note').value='';
+  document.querySelectorAll('#d-stars .star').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('#d-res .t-chip').forEach(s=>s.classList.remove('on'));
+  dScore=0;
+}
+
+function renderDiary() {
+  const el=document.getElementById('diary-list');
+  if(!diary.length){el.innerHTML='<div class="empty-t">还没有记录 — 喷完香水随手记一下</div>';return;}
+  el.innerHTML=diary.map(d=>{
+    const stars='★'.repeat(d.score)+'☆'.repeat(5-d.score);
+    const bc=d.result==='没问题'?'safe':d.result.includes('晕')?'risk':'caution';
+    return `<div class="diary-item"><div class="diary-top"><span class="diary-name">${d.name}</span><span class="diary-badge ${bc}">${d.result}</span></div><div class="diary-meta">${d.date} · ${stars}</div>${d.note?`<div class="diary-note">${d.note}</div>`:''}</div>`;
+  }).join('');
+}
+
+async function discover() {
+  const hint=document.getElementById('disc-hint').value.trim();
+  show('disc-load','disc-res');
+  const prompt=`你是专业香水顾问。\n\n${buildProfile()}\n\n${hint?'用户想探索：'+hint:'请根据档案主动推荐。'}\n\n推荐3款她可能喜欢但还没试过的香水（不用markdown符号）：\n\n你可能会喜欢\n\n推荐一\n名称：xxx\n为什么推给你：基于档案，1句话\n香调：xxx\n价格参考：xxx\n风险提示：有则说明，否则写"无雷区成分"\n\n推荐二（同上）\n推荐三（同上）\n\n探香小贴士（1句）`;
+  try{const r=await callAI(prompt);done('disc-load','disc-res',r);}
+  catch(e){done('disc-load','disc-res','探香出错，请稍后重试。');}
+}
+
+async function getRec() {
+  const occ=document.querySelector('#r-occ .t-chip.on')?.dataset.v||'日常';
+  const sea=document.querySelector('#r-sea .t-chip.on')?.dataset.v||'不限';
+  const bud=document.querySelector('#r-bud .t-chip.on')?.dataset.v||'不限';
+  const ext=document.getElementById('r-ext').value.trim();
+  show('rec-load','rec-res');
+  const prompt=`你是专业香水顾问。\n\n${buildProfile()}\n\n场合=${occ}，季节=${sea}，预算=${bud}${ext?'，补充='+ext:''}\n\n推荐3款适合的香水，必须避开雷区成分（不用markdown符号）：\n\n推荐一\n名称：xxx\n香调：xxx\n价格：xxx\n为什么适合你：1-2句\n\n推荐二（同上）\n推荐三（同上）\n\n小贴士：1句`;
+  try{const r=await callAI(prompt);done('rec-load','rec-res',r);}
+  catch(e){done('rec-load','rec-res','推荐出错，请稍后重试。');}
+}
+
+renderDiary();
+
+// scroll animations
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// pre-fill from known profile
+const ds=['淡花香','木质'];
+const dr=['麝香','浓郁花香','东方/琥珀','烟熏/皮革','龙涎香','香根草/岩兰草'];
+document.querySelectorAll('#tg-safe .t-chip').forEach(c=>{if(ds.includes(c.dataset.v))c.classList.add('on')});
+document.querySelectorAll('#tg-risk .t-chip').forEach(c=>{if(dr.includes(c.dataset.v))c.classList.add('on')});
+document.querySelectorAll('#tg-sens .t-chip').forEach(c=>{if(c.dataset.v==='非常敏感')c.classList.add('on')});
+document.getElementById('tp-good').value='马吉拉慵懒周末、香奈儿粉色邂逅';
+document.getElementById('tp-bad').value='蒂普提克肌肤之花、别样、罗意威奇迹天光、TF苦桃';
+</script>
+</body>
+</html>
